@@ -42,6 +42,11 @@ variable "service_account_iam_roles" {
     "roles/logging.logWriter",
     "roles/monitoring.metricWriter",
     "roles/monitoring.viewer",
+    "roles/iam.serviceAccountKeyAdmin",
+    "roles/iam.serviceAccountAdmin",
+    "roles/serviceusage.apiKeysAdmin",
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter",
+    "roles/storage.admin",
   ]
   description = "List of IAM roles to assign to the service account."
 }
