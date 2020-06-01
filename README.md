@@ -1,2 +1,6 @@
 # terraform-clusters
-Terraform codes to provision Clusters
+
+# Learn Terraform - Provision Clusters
+
+This repo contains Terraform configuration files to provision clusters.
+
