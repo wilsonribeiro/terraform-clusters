@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = "nuveo-shared-terraform-state"
-    prefix = "nuveo-vault-cluster/backlog-nuveo-vault-cluster-state"
+    bucket = "vault-terraform-state"
+    prefix = "vault-cluster/backlog-vault-cluster-state"
   }
 }
