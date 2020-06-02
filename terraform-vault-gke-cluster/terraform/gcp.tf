@@ -17,29 +17,30 @@ resource "random_id" "project_random" {
 }
 
 # Create the project if one isn't specified
-resource "google_project" "Shared" {
+resource "google_project" "vault" {
   count           = var.project != "" ? 0 : 1
   name            = random_id.project_random.hex
   project_id      = random_id.project_random.hex
-
+  org_id          = var.org_id
+  billing_account = var.billing_account
 }
 
 # Or use an existing project, if defined
-data "google_project" "Shared" {
-  project_id = var.project != "" ? var.project : google_project.Shared[0].project_id
+data "google_project" "vault" {
+  project_id = var.project != "" ? var.project : google_project.vault[0].project_id
 }
 
 # Create the vault service account
 resource "google_service_account" "vault-server" {
   account_id   = "vault-server"
   display_name = "Vault Server"
-  project      = data.google_project.Shared.project_id
+  project      = data.google_project.vault.project_id
 }
 
 # Add the service account to the project
 resource "google_project_iam_member" "service-account" {
   count   = length(var.service_account_iam_roles)
-  project = data.google_project.Shared.project_id
+  project = data.google_project.vault.project_id
   role    = element(var.service_account_iam_roles, count.index)
   member  = "serviceAccount:${google_service_account.vault-server.email}"
 }
@@ -47,7 +48,7 @@ resource "google_project_iam_member" "service-account" {
 # Add user-specified roles
 resource "google_project_iam_member" "service-account-custom" {
   count   = length(var.service_account_custom_iam_roles)
-  project = data.google_project.Shared.project_id
+  project = data.google_project.vault.project_id
   role    = element(var.service_account_custom_iam_roles, count.index)
   member  = "serviceAccount:${google_service_account.vault-server.email}"
 }
@@ -55,7 +56,7 @@ resource "google_project_iam_member" "service-account-custom" {
 # Enable required services on the project
 resource "google_project_service" "service" {
   count   = length(var.project_services)
-  project = data.google_project.Shared.project_id
+  project = data.google_project.vault.project_id
   service = element(var.project_services, count.index)
 
   # Do not disable the service on destroy. On destroy, we are going to
@@ -66,8 +67,8 @@ resource "google_project_service" "service" {
 
 # Create the storage bucket
 resource "google_storage_bucket" "vault" {
-  name          = "${data.google_project.Shared.project_id}-vault-storage"
-  project       = data.google_project.Shared.project_id
+  name          = "${data.google_project.vault.project_id}-vault-storage"
+  project       = data.google_project.vault.project_id
   force_destroy = true
   storage_class = "MULTI_REGIONAL"
 
@@ -117,7 +118,7 @@ locals {
 resource "google_kms_key_ring" "vault" {
   name     = local.kms_key_ring
   location = var.region
-  project  = data.google_project.Shared.project_id
+  project  = data.google_project.vault.project_id
 
   depends_on = [google_project_service.service]
 }
@@ -147,14 +148,14 @@ resource "google_kms_crypto_key" "kubernetes-secrets" {
 resource "google_kms_crypto_key_iam_member" "kubernetes-secrets-gke" {
   crypto_key_id = google_kms_crypto_key.kubernetes-secrets.id
   role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-  member        = "serviceAccount:service-${data.google_project.Shared.number}@container-engine-robot.iam.gserviceaccount.com"
+  member        = "serviceAccount:service-${data.google_project.vault.number}@container-engine-robot.iam.gserviceaccount.com"
 }
 
 # Create an external NAT IP
 resource "google_compute_address" "vault-nat" {
   count   = 2
   name    = "vault-nat-external-${count.index}"
-  project = data.google_project.Shared.project_id
+  project = data.google_project.vault.project_id
   region  = var.region
 
   depends_on = [google_project_service.service]
@@ -163,7 +164,7 @@ resource "google_compute_address" "vault-nat" {
 # Create a network for GKE
 resource "google_compute_network" "vault-network" {
   name                    = "vault-network"
-  project                 = data.google_project.Shared.project_id
+  project                 = data.google_project.vault.project_id
   auto_create_subnetworks = false
 
   depends_on = [google_project_service.service]
@@ -172,7 +173,7 @@ resource "google_compute_network" "vault-network" {
 # Create subnets
 resource "google_compute_subnetwork" "vault-subnetwork" {
   name          = "vault-subnetwork"
-  project       = data.google_project.Shared.project_id
+  project       = data.google_project.vault.project_id
   network       = google_compute_network.vault-network.self_link
   region        = var.region
   ip_cidr_range = var.kubernetes_network_ipv4_cidr
@@ -193,7 +194,7 @@ resource "google_compute_subnetwork" "vault-subnetwork" {
 # Create a NAT router so the nodes can reach DockerHub, etc
 resource "google_compute_router" "vault-router" {
   name    = "vault-router"
-  project = data.google_project.Shared.project_id
+  project = data.google_project.vault.project_id
   region  = var.region
   network = google_compute_network.vault-network.self_link
 
@@ -204,7 +205,7 @@ resource "google_compute_router" "vault-router" {
 
 resource "google_compute_router_nat" "vault-nat" {
   name    = "vault-nat-1"
-  project = data.google_project.Shared.project_id
+  project = data.google_project.vault.project_id
   router  = google_compute_router.vault-router.name
   region  = var.region
 
@@ -226,7 +227,7 @@ resource "google_compute_router_nat" "vault-nat" {
 
 # Get latest cluster version
 data "google_container_engine_versions" "versions" {
-  project  = data.google_project.Shared.project_id
+  project  = data.google_project.vault.project_id
   location = var.region
 }
 
@@ -235,7 +236,7 @@ resource "google_container_cluster" "vault" {
   provider = google-beta
 
   name     = "vault"
-  project  = data.google_project.Shared.project_id
+  project  = data.google_project.vault.project_id
   location = var.region
 
   network    = google_compute_network.vault-network.self_link
@@ -360,7 +361,7 @@ resource "google_container_cluster" "vault" {
 resource "google_compute_address" "vault" {
   name    = "vault-lb"
   region  = var.region
-  project = data.google_project.Shared.project_id
+  project = data.google_project.vault.project_id
 
   depends_on = [google_project_service.service]
 }
@@ -370,7 +371,7 @@ output "address" {
 }
 
 output "project" {
-  value = data.google_project.Shared.project_id
+  value = data.google_project.vault.project_id
 }
 
 output "region" {

@@ -1,5 +1,5 @@
-# Generate self-signed TLS certificates. 
-# This code uses Terraform's internals instead.
+# Generate self-signed TLS certificates. Unlike @kelseyhightower's original
+# demo, this does not use cfssl and uses Terraform's internals instead.
 resource "tls_private_key" "vault-ca" {
   algorithm = "RSA"
   rsa_bits  = "2048"
@@ -77,3 +77,4 @@ resource "tls_locally_signed_cert" "vault" {
     command = "echo '${self.cert_pem}' > ../tls/vault.pem && echo '${tls_self_signed_cert.vault-ca.cert_pem}' >> ../tls/vault.pem && chmod 0600 ../tls/vault.pem"
   }
 }
+

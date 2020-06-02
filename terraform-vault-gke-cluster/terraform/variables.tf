@@ -4,20 +4,30 @@ terraform {
 
 variable "region" {
   type        = string
-  default     = "us-central1"
-  description = "Region in which to create the cluster and run."
+  default     = "us-east4"
+  description = "Region in which to create the cluster and run Atlantis."
 }
 
 variable "project" {
   type        = string
-  default     = "nuveo-shared"
+  default     = ""
   description = "Project ID where Terraform is authenticated to run to create additional projects. If provided, Terraform will create the GKE and Vault cluster inside this project. If not given, Terraform will generate a new project."
 }
 
 variable "project_prefix" {
   type        = string
-  default     = ""
+  default     = "vault-"
   description = "String value to prefix the generated project ID with."
+}
+
+variable "billing_account" {
+  type        = string
+  description = "Billing account ID."
+}
+
+variable "org_id" {
+  type        = string
+  description = "Organization ID."
 }
 
 variable "kubernetes_instance_type" {
@@ -32,14 +42,6 @@ variable "service_account_iam_roles" {
     "roles/logging.logWriter",
     "roles/monitoring.metricWriter",
     "roles/monitoring.viewer",
-    "roles/iam.serviceAccountKeyAdmin",
-    "roles/iam.serviceAccountAdmin",
-    "roles/serviceusage.apiKeysAdmin",
-    "roles/cloudkms.cryptoKeyEncrypterDecrypter",
-    "roles/gkehub.admin",
-    "roles/container.clusterAdmin",
-    "roles/container.admin",
-    "roles/apigee.admin"
   ]
   description = "List of IAM roles to assign to the service account."
 }
