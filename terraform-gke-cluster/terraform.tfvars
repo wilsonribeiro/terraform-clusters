@@ -1,2 +1,2 @@
-project_id = "nuveo-staging"
+project_id = "your-project"
 region     = "us-central1"
