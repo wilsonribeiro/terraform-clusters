@@ -1,16 +1,3 @@
-# Nuveo Infra
-
-Our Continuous Delivery in scripts and recipes.
-
-## Tools and languages using
-
-- [Packer](https://www.packer.io/)
-- [Terraform](https://www.terraform.io/)
-- [Shell Script](http://aurelio.net/shell/)
-
-Other languages and tools could be improve in these repo.
-
-
 # HashiCorp Vault on GKE with Terraform
 
 This tutorial walks through provisioning a highly-available [HashiCorp
