@@ -1,4 +1,4 @@
-variable "gke_username" {
+Adicionando Terraform Codes - Clustersvariable "gke_username" {
   default     = ""
   description = "gke username"
 }
@@ -15,7 +15,7 @@ variable "gke_num_nodes" {
 
 # GKE cluster
 resource "google_container_cluster" "primary" {
-  name     = "${var.project_id}-vault-cluster"
+  name     = "${var.project_id}-gke-cluster"
   location = var.region
 
   remove_default_node_pool = true

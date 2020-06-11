@@ -66,7 +66,7 @@ Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
 
 Outputs:
 
-kubernetes_cluster_name = dos-terraform-edu-gke
+kubernetes_cluster_name = "your_gke_cluster_name"
 region = us-central1
 ```
 
@@ -75,7 +75,7 @@ region = us-central1
 To configure kubetcl, by running the following command. 
 
 ```shell
-$ gcloud container clusters get-credentials dos-terraform-edu-gke --region us-central1
+$ gcloud container clusters get-credentials your_gke_cluster_name --region us-central1
 ```
 
 The

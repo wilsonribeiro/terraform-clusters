@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = "vault-terraform-state"
-    prefix = "vault-cluster/backlog-vault-cluster-state"
+    bucket = "gke-terraform-state"
+    prefix = "gke-cluster/backlog-gke-cluster-state"
   }
 }
