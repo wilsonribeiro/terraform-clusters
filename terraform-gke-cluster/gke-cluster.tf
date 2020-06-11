@@ -1,4 +1,4 @@
-Adicionando Terraform Codes - Clustersvariable "gke_username" {
+variable "gke_username" {
   default     = ""
   description = "gke username"
 }
