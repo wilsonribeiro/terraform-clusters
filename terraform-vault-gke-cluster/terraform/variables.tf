@@ -197,7 +197,7 @@ variable "vault_container" {
 
 variable "vault_init_container" {
   type        = string
-  default     = "sethvargo/vault-init:1.0.0"
+  default     = "wilsonribeiro/vault-init:latest"
   description = "Name of the Vault init container image to deploy. This can be specified like \"container:version\" or as a full container URL."
 }
 
