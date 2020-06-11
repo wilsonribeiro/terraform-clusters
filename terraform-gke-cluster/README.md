@@ -1,6 +1,6 @@
-# Learn Terraform - Provision a GKE cluster.
+# Learn Terraform - Provision a GKE Cluster.
 
-This repo contains Terraform configuration files to provision a GKE cluster in
+This repo contains Terraform configuration files to provision a GKE Cluster in
 GCP.
 
 This example repository also creates a VPC and a subnet for the GKE cluster. That is not
@@ -145,4 +145,3 @@ ca.crt:     1119 bytes
 Select "Token" then copy and paste the entire token you receive into the 
 [dashboard authentication screen](http://127.0.0.1:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/) 
 to sign in. You are now signed in to the dashboard for your Kubernetes cluster.
-
