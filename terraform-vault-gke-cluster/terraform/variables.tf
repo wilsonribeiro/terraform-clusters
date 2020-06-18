@@ -191,7 +191,7 @@ variable "num_vault_pods" {
 
 variable "vault_container" {
   type        = string
-  default     = "vault:1.2.1"
+  default     = "vault:1.4.2"
   description = "Name of the Vault container image to deploy. This can be specified like \"container:version\" or as a full container URL."
 }
 
