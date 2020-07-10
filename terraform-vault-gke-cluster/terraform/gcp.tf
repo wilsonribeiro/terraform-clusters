@@ -321,7 +321,9 @@ resource "google_container_cluster" "vault" {
     cluster_secondary_range_name  = google_compute_subnetwork.vault-subnetwork.secondary_ip_range[0].range_name
     services_secondary_range_name = google_compute_subnetwork.vault-subnetwork.secondary_ip_range[1].range_name
   }
-
+  
+  networking_mode = "VPC_NATIVE"
+  
   # Specify the list of CIDRs which can access the master's API
   master_authorized_networks_config {
     dynamic "cidr_blocks" {
