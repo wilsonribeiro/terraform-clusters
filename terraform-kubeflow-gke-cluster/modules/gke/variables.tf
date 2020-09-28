@@ -35,5 +35,3 @@ variable "node_type" {
     description = "The cluster's node type"
     default     = "e2-standard-8"
 }
-
-
